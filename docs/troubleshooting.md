@@ -6,10 +6,10 @@
 
 1. Port Already in Use
 ```bash
-Error: EADDRINUSE: address already in use :::3005
+Error: EADDRINUSE: address already in use :::3071
 ```
 Solution:
-- Check if another process is using port 3005
+- Check if another process is using port 3071
 - Kill the existing process
 - Change the port number
 

@@ -29,10 +29,9 @@ class MCPServer {
   private wss: WebSocketServer;
   private model: any;
   private genAI: GoogleGenerativeAI;
-  private defaultModel: string;
-  private debug: boolean;
+  private defaultModel: string;  private debug: boolean;
 
-  constructor(apiKey: string, port: number = 3005, defaultModel?: string) {
+  constructor(apiKey: string, port: number = 3071, defaultModel?: string) {
     this.debug = process.env.DEBUG === 'true';
     
     // Get model from environment or use provided default or fallback to gemini-pro
@@ -182,10 +181,9 @@ class MCPServer {
 // Start server
 const apiKey = process.env.GEMINI_API_KEY;
 if (!apiKey) {
-  console.error('GEMINI_API_KEY environment variable is required');
-  process.exit(1);
+  console.error('GEMINI_API_KEY environment variable is required');  process.exit(1);
 }
 
-const port = parseInt(process.env.PORT || '3005', 10);
+const port = parseInt(process.env.PORT || '3071', 10);
 const model = process.env.GEMINI_MODEL; // Get model from environment variable
 new MCPServer(apiKey, port, model);

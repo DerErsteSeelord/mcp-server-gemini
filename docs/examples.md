@@ -81,7 +81,7 @@ Claude: I'll use both my own knowledge and ask Gemini through the MCP connection
 
 3. **Connection Issues**
    - Verify Claude Desktop is running
-   - Check if port 3005 is available
+   - Check if port 3071 is available (default port)
    - Look for any firewall restrictions
 
 ## Best Practices
@@ -113,6 +113,8 @@ Claude: I'll use both my own knowledge and ask Gemini through the MCP connection
   }
 }
 ```
+
+**Note:** By default, the server runs on port 3071. You can override this with the PORT environment variable.
 
 ### Development Setup
 ```json
@@ -158,12 +160,12 @@ Claude: I'll use both my own knowledge and ask Gemini through the MCP connection
 
 1. Check Server Status
 ```bash
-curl -I http://localhost:3005
+curl -I http://localhost:3071
 ```
 
 2. Test WebSocket Connection
 ```bash
-wscat -c ws://localhost:3005
+wscat -c ws://localhost:3071
 ```
 
 3. Verify MCP Integration

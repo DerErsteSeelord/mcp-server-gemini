@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced handlers to support model switching at runtime
 - Server now accepts a model parameter in the constructor
 - Model name is now included in response metadata
+- Changed default server port from 3005 to 3071 to avoid conflicts
 
 ### Fixed
 - Improved error handling when model switching fails

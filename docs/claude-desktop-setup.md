@@ -92,6 +92,8 @@ The configuration file location depends on your operating system:
 }
 ```
 
+**Note:** The default port is now 3071. You only need to set the PORT environment variable if you want to use a different port.
+
 ## Troubleshooting
 
 ### Common Issues

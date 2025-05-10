@@ -27,10 +27,9 @@ export class MCPServer {
    * @param {number} port - Port to run the server on
    * @param {string} defaultModel - Default Gemini model to use
    * 
-   * @since 1.0.0
-   * @modified 1.1.0 - Added defaultModel parameter and model switching support
+   * @since 1.0.0   * @modified 1.1.0 - Added defaultModel parameter and model switching support
    */
-  constructor(apiKey: string, port: number = 3005, defaultModel: string = 'gemini-pro') {
+  constructor(apiKey: string, port: number = 3071, defaultModel: string = 'gemini-pro') {
     this.defaultModel = process.env.GEMINI_MODEL || defaultModel;
     this.currentModelName = this.defaultModel;
     

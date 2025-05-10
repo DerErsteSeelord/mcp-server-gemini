@@ -42,6 +42,7 @@ Model Context Protocol (MCP) server implementation that enables Claude Desktop t
 3. **Choose Your Model**
    - You can set the model through environment variables:
      - `GEMINI_MODEL`: The Gemini model to use (default: `gemini-pro`)
+     - `PORT`: The server port (default: `3071`)
      - Available models: `gemini-pro`, `gemini-1.5-pro`, `gemini-1.5-flash`, etc.
    - You can also select a model at runtime in your requests (see examples)
 
@@ -76,7 +77,7 @@ Contributions are welcome! Please see our [Contributing Guide](CONTRIBUTING.md).
 ## Common Issues
 
 1. **Connection Issues**
-   - Check if port 3005 is available
+   - Check if port 3071 is available (default port)
    - Verify internet connection
    - See [Troubleshooting Guide](docs/troubleshooting.md)
 

@@ -1,17 +1,21 @@
 import { describe, it, expect, jest } from '@jest/globals';
-import { MCPHandlers } from '../src/handlers';
-import { ERROR_CODES } from '../src/protocol';
+import { MCPHandlers } from '../src/handlers.js';
+import { ERROR_CODES } from '../src/protocol.js';
 
 describe('MCP Handlers', () => {
   const mockModel = {
     generateContent: jest.fn()
   };
 
+  const mockGoogleGenerativeAI = {
+    getGenerativeModel: jest.fn().mockReturnValue(mockModel)
+  };
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  const handlers = new MCPHandlers(mockModel as any);
+  const handlers = new MCPHandlers(mockModel as any, {} as any, mockGoogleGenerativeAI as any, 'gemini-pro');
 
   describe('handleInitialize', () => {
     it('should return correct initialize response', async () => {

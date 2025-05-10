@@ -28,14 +28,20 @@ type MCPError = {
 class MCPServer {
   private wss: WebSocketServer;
   private model: any;
+  private genAI: GoogleGenerativeAI;
+  private defaultModel: string;
   private debug: boolean;
 
-  constructor(apiKey: string, port: number = 3005) {
+  constructor(apiKey: string, port: number = 3005, defaultModel?: string) {
     this.debug = process.env.DEBUG === 'true';
     
+    // Get model from environment or use provided default or fallback to gemini-pro
+    this.defaultModel = process.env.GEMINI_MODEL || defaultModel || 'gemini-pro';
+    this.log(`Using model: ${this.defaultModel}`);
+    
     // Initialize Gemini
-    const genAI = new GoogleGenerativeAI(apiKey);
-    this.model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+    this.genAI = new GoogleGenerativeAI(apiKey);
+    this.model = this.genAI.getGenerativeModel({ model: this.defaultModel });
 
     // Initialize WebSocket server
     this.wss = new WebSocketServer({ port });
@@ -181,4 +187,5 @@ if (!apiKey) {
 }
 
 const port = parseInt(process.env.PORT || '3005', 10);
-new MCPServer(apiKey, port);
+const model = process.env.GEMINI_MODEL; // Get model from environment variable
+new MCPServer(apiKey, port, model);

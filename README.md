@@ -8,6 +8,7 @@ Model Context Protocol (MCP) server implementation that enables Claude Desktop t
 - Real-time response streaming
 - Secure API key handling
 - Configurable model parameters
+- Support for different Gemini models
 - TypeScript implementation
 
 ## Quick Start
@@ -22,8 +23,7 @@ Model Context Protocol (MCP) server implementation that enables Claude Desktop t
      Mac: ~/Library/Application Support/Claude/claude_desktop_config.json
      Windows: %APPDATA%\Claude\claude_desktop_config.json
      Linux: ~/.config/Claude/claude_desktop_config.json
-     ```
-   - Add Gemini configuration:
+     ```   - Add Gemini configuration:
      ```json
      {
        "mcpServers": {
@@ -31,14 +31,21 @@ Model Context Protocol (MCP) server implementation that enables Claude Desktop t
            "command": "npx",
            "args": ["-y", "github:aliargun/mcp-server-gemini"],
            "env": {
-             "GEMINI_API_KEY": "your_api_key_here"
+             "GEMINI_API_KEY": "your_api_key_here",
+             "GEMINI_MODEL": "gemini-pro"
            }
          }
        }
      }
      ```
 
-3. **Restart Claude Desktop**
+3. **Choose Your Model**
+   - You can set the model through environment variables:
+     - `GEMINI_MODEL`: The Gemini model to use (default: `gemini-pro`)
+     - Available models: `gemini-pro`, `gemini-1.5-pro`, `gemini-1.5-flash`, etc.
+   - You can also select a model at runtime in your requests (see examples)
+
+4. **Restart Claude Desktop**
 
 ## Documentation
 

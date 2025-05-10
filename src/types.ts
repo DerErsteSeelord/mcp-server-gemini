@@ -26,7 +26,9 @@ export interface ProgressNotification extends NotificationMessage {
   params: ProgressParams;
 }
 
-export interface ShutdownRequest extends MCPRequest {
+export interface ShutdownRequest {
+  jsonrpc: '2.0';
+  id: string | number;
   method: 'shutdown';
 }
 

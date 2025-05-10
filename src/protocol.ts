@@ -1,4 +1,5 @@
-import { ServerCapabilities, ServerInfo, InitializeResult, ProgressParams } from './types';
+import { ProgressParams } from './types.js';
+import { ServerInfo, ServerCapabilities, InitializeResult } from './types/protocols.js';
 
 export const PROTOCOL_VERSION = '2024-11-05';
 
@@ -31,6 +32,28 @@ export const SERVER_CAPABILITIES: ServerCapabilities = {
   tools: { listChanged: true },
   logging: {}
 };
+
+export function validateRequest(request: any, requiredParams: string[] = []): boolean {
+  if (!request || typeof request !== 'object') {
+    return false;
+  }
+  
+  if (request.jsonrpc !== '2.0' || !request.method || !request.id) {
+    return false;
+  }
+  
+  if (requiredParams.length > 0 && (!request.params || typeof request.params !== 'object')) {
+    return false;
+  }
+  
+  for (const param of requiredParams) {
+    if (request.params[param] === undefined) {
+      return false;
+    }
+  }
+  
+  return true;
+}
 
 export class ProtocolManager {
   private initialized = false;

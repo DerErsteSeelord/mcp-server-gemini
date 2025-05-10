@@ -1,33 +1,51 @@
-import WebSocket from 'ws';
+import WebSocket, { WebSocketServer } from 'ws';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { MCPHandlers } from './handlers';
-import { ProtocolManager } from './protocol';
-import { ERROR_CODES } from './protocol';
-import { MCPRequest, NotificationMessage, ConnectionState } from './types';
+import { MCPHandlers } from './handlers.js';
+import { ProtocolManager } from './protocol.js';
+import { ERROR_CODES } from './protocol.js';
+import { NotificationMessage } from './types.js';
+import { ConnectionState } from './types/index.js';
+import { MCPRequest } from './types/protocols.js';
 import http from 'http';
 
 export class MCPServer {
-  private wss: WebSocket.Server;
+  private wss: WebSocketServer;
   private protocol: ProtocolManager;
   private handlers: MCPHandlers;
   private clients: Map<WebSocket, ConnectionState>;
   private httpServer: http.Server;
   private startTime: Date;
+  private genAI: GoogleGenerativeAI;
+  private model: any;
+  private defaultModel: string;
+  private currentModelName: string;
 
-  constructor(apiKey: string, port: number = 3005) {
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+  /**
+   * Creates a new MCP Server instance for Gemini API.
+   * 
+   * @param {string} apiKey - Google API key for Gemini access
+   * @param {number} port - Port to run the server on
+   * @param {string} defaultModel - Default Gemini model to use
+   * 
+   * @since 1.0.0
+   * @modified 1.1.0 - Added defaultModel parameter and model switching support
+   */
+  constructor(apiKey: string, port: number = 3005, defaultModel: string = 'gemini-pro') {
+    this.defaultModel = process.env.GEMINI_MODEL || defaultModel;
+    this.currentModelName = this.defaultModel;
+    
+    this.genAI = new GoogleGenerativeAI(apiKey);
+    this.model = this.genAI.getGenerativeModel({ model: this.currentModelName });
 
     this.protocol = new ProtocolManager();
-    this.handlers = new MCPHandlers(model, this.protocol);
+    this.handlers = new MCPHandlers(this.model, this.protocol, this.genAI, this.defaultModel);
     this.clients = new Map();
     this.startTime = new Date();
 
     // Create HTTP server for health check endpoint
     this.httpServer = http.createServer(this.handleHttpRequest.bind(this));
-    
-    // Create WebSocket server attached to HTTP server
-    this.wss = new WebSocket.Server({ server: this.httpServer });
+      // Create WebSocket server attached to HTTP server
+    this.wss = new WebSocketServer({ server: this.httpServer });
     
     this.setupWebSocketServer();
     
@@ -93,13 +111,12 @@ export class MCPServer {
         // Validate protocol state
         try {
           this.protocol.validateState(request.method);
-          
-          // Mark as initialized if this is an initialize request
+            // Mark as initialized if this is an initialize request
           if (request.method === 'initialize') {
             state.initialized = true;
           }
         } catch (error) {
-          this.sendError(ws, request.id, ERROR_CODES.SERVER_NOT_INITIALIZED, error.message);
+          this.sendError(ws, request.id, ERROR_CODES.SERVER_NOT_INITIALIZED, error instanceof Error ? error.message : 'Server not initialized');
           return;
         }
 
@@ -122,10 +139,9 @@ export class MCPServer {
     ws.on('close', () => {
       // Cleanup connection state
       this.clients.delete(ws);
-      
-      // Cancel any pending requests
+        // Cancel any pending requests
       if (state.activeRequests.size > 0) {
-        state.activeRequests.forEach(requestId => {
+        state.activeRequests.forEach((requestId: string | number) => {
           this.handlers.cancelRequest(requestId);
         });
       }
@@ -144,12 +160,12 @@ export class MCPServer {
 
   private handleError(ws: WebSocket, error: any): void {
     const state = this.clients.get(ws);
-    this.logError('request', error, state);
-
-    if (error instanceof SyntaxError) {
+    this.logError('request', error, state);    if (error instanceof SyntaxError) {
       this.sendError(ws, null, ERROR_CODES.PARSE_ERROR, 'Invalid JSON');
-    } else if (error.code && ERROR_CODES[error.code]) {
-      this.sendError(ws, null, error.code, error.message);
+    } else if (error.code && typeof error.code === 'number') {
+      const errorCode = Object.values(ERROR_CODES).includes(error.code) ? 
+        error.code : ERROR_CODES.INTERNAL_ERROR;
+      this.sendError(ws, null, errorCode, error.message || 'Unknown error');
     } else {
       this.sendError(ws, null, ERROR_CODES.INTERNAL_ERROR, 'Internal server error');
     }
@@ -221,12 +237,10 @@ export class MCPServer {
         code: ERROR_CODES.SERVER_NOT_INITIALIZED,
         message: 'Server shutting down'
       }
-    });
-
-    // Close all connections
+    });    // Close all connections
     this.clients.forEach((state, client) => {
       // Cancel any pending requests
-      state.activeRequests.forEach(requestId => {
+      state.activeRequests.forEach((requestId: string | number) => {
         this.handlers.cancelRequest(requestId);
       });
       client.close();

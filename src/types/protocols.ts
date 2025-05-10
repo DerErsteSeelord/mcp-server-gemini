@@ -26,6 +26,7 @@ export interface MCPError {
 export interface StreamRequest extends MCPRequest {
   params: {
     prompt: string;
+    model?: string;
     temperature?: number;
     maxTokens?: number;
     stopSequences?: string[];
@@ -49,6 +50,7 @@ export interface StreamResponse extends MCPResponse {
 export interface GenerateRequest extends MCPRequest {
   params: {
     prompt: string;
+    model?: string;
     temperature?: number;
     maxTokens?: number;
     stopSequences?: string[];
@@ -85,4 +87,23 @@ export interface ConfigureRequest extends MCPRequest {
       timeout?: number;
     };
   };
+}
+
+export interface ServerCapabilities {
+  experimental: Record<string, any>;
+  prompts: { listChanged: boolean };
+  resources: { subscribe: boolean; listChanged: boolean };
+  tools: { listChanged: boolean };
+  logging: Record<string, any>;
+}
+
+export interface ServerInfo {
+  name: string;
+  version: string;
+}
+
+export interface InitializeResult {
+  protocolVersion: string;
+  serverInfo: ServerInfo;
+  capabilities: ServerCapabilities;
 }

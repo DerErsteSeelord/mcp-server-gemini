@@ -17,7 +17,8 @@
          "command": "npx",
          "args": ["-y", "github:aliargun/mcp-server-gemini"],
          "env": {
-           "GEMINI_API_KEY": "your_api_key_here"
+           "GEMINI_API_KEY": "your_api_key_here",
+           "GEMINI_MODEL": "gemini-pro"
          }
        }
      }
@@ -48,6 +49,7 @@ Claude: I'll use both my own knowledge and ask Gemini through the MCP connection
      "method": "generate",
      "params": {
        "prompt": "Your prompt here",
+       "model": "gemini-1.5-pro",
        "temperature": 0.7,
        "maxTokens": 1000
      }
@@ -168,3 +170,47 @@ wscat -c ws://localhost:3005
 ```
 Ask Claude: "Can you verify if the Gemini MCP connection is working?"
 ```
+
+## Model Selection
+
+### Setting Default Model via Environment
+Set the default model for all requests using the `GEMINI_MODEL` environment variable:
+
+```json
+{
+  "mcpServers": {
+    "gemini": {
+      "command": "npx",
+      "args": ["-y", "github:aliargun/mcp-server-gemini"],
+      "env": {
+        "GEMINI_API_KEY": "your_api_key_here",
+        "GEMINI_MODEL": "gemini-1.5-pro"
+      }
+    }
+  }
+}
+```
+
+### Selecting Model at Runtime
+You can specify a different model for each request:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "generate",
+  "params": {
+    "prompt": "Explain quantum computing in simple terms",
+    "model": "gemini-1.5-pro",
+    "temperature": 0.5
+  }
+}
+```
+
+### Available Gemini Models
+Depending on your API key access level, you can use various models:
+
+- `gemini-pro` - Standard model (default)
+- `gemini-1.5-pro` - Upgraded version with enhanced capabilities
+- `gemini-1.5-flash` - Faster model for quicker responses
+- `gemini-pro-vision` - For image understanding (requires different API format)

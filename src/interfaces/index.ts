@@ -1,6 +1,24 @@
-export * from './completion';
-export * from './resources';
-export * from './prompts';
+export * from './completion.js';
+export * from './resources.js';
+export * from './prompts.js';
+
+export interface CompletionArgument {
+  prompt: string;
+  temperature?: number;
+  maxTokens?: number;
+  stopSequences?: string[];
+}
+
+export interface Completion {
+  content: string;
+  metadata?: {
+    model?: string;
+    provider?: string;
+    temperature?: number;
+    maxTokens?: number;
+    tokens?: number;
+  };
+}
 
 export interface BaseProvider {
   initialize(): Promise<void>;
